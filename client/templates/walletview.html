@@ -1,0 +1,66 @@
+<template name="walletview">
+  <button type="button" class="btn btn-secondary btn-primary btn-danger stop">Close Wallet</button>
+  <div class="container">
+    <h2>Wallet</h2>
+    <span>Your deposit {{coinsString}} address: </span>
+    <button type="button" class="btn btn-default btn-xs btn-copy-link" data-clipboard-text="{{address}}">{{address}}</button>
+  </div>
+
+  <div class="container">
+    <br>
+    <span class="badge badge-dark balance">{{balance}}</span>
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button type="button" class="btn btn-secondary kmd
+      {{#if activecoinKMD}}
+        buttonactived
+      {{else}}
+        buttondesactived
+      {{/if}}">KMD</button>
+      <div style="border-right: 1px solid #d9d9d9; float: left; height: 34px">
+      </div>
+      <button type="button" class="btn btn-secondary btc
+      {{#if activecoinBTC}}
+        buttonactived
+      {{else}}
+        buttondesactived
+      {{/if}}">BTC</button>
+      <div style="border-right: 1px solid #d9d9d9; float: left; height: 34px">
+      </div>
+      <button type="button" class="btn btn-secondary mnz
+      {{#if activecoinMNZ}}
+        buttonactived
+      {{else}}
+        buttondesactived
+      {{/if}}">MNZ</button>
+    </div>
+  </div>
+  <br>
+  <br>
+  <div class="container">
+    <div class="">
+      <h2>Withdrawal</h2>
+      <div class="input-group">
+        <span class="input-group-addon">{{currentcoin}}</span>
+        <input type="text" class="form-control address" aria-label="Address" placeholder="{{currentcoin}} Address">
+        <input type="number" class="form-control amount" aria-label="Amount" placeholder="Amount" value="0">
+        <span class="input-group-addon">{{balance}}</span>
+        <span class="input-group-addon">
+          <button class="btn btn-secondary btn-danger sendcoins" type="button">Send</button>
+      </span>
+      </div>
+      {{#if activecoinMNZ}}
+      <h2>Buy MNZ</h2>
+      <div class="input-group">
+        <input type="number" class="form-control buyamount" aria-label="Amount" placeholder="Amount" value="0">
+          <button class="btn btn-secondary btn-success buy" type="button">Buy</button>
+      </div>
+      <br>
+      <div class="container">
+
+      </div>
+      {{/if}}
+    </div>
+  </div>
+
+</template>

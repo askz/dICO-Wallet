@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400');
+
+.stop {
+	float: right;
+}
+
+.buttonactived {
+	color: white;
+	background-color: #7e3589;
+}
+
+.buttondesactived {
+	color: white;
+	background-color: #bfbfbf;
+}
+
+.balance {
+	font-size: 16pt;
+	font-weight: 300;
+	width: 150px;
+}
+
+.btn:hover {
+	color: white;
+}
+
+.btn:focus {
+	color: white;
+}
+
+.disableSendCoins {
+	opacity: 0.65; 
+ 	cursor: not-allowed;
+}
