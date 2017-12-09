@@ -15,7 +15,7 @@ meteor npm install --save sweetalert
 meteor npm install --save pm2 fs-extra fix-path
 ```
 
-run the dico-wallet:
+run the dico-wallet: (current version has only OSX version of the komodoplatformdaemon included)
 ```
 meteor run
 ```
