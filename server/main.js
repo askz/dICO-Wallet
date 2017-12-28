@@ -1,10 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { sleep } from 'meteor/froatsnook:sleep';
 import { rootPath} from 'meteor/ostrio:meteor-root';
-//import {DDPRateLimiter} from 'meteor/ddp-rate-limiter';
-//import childProcess from 'child_process'; //todo @rick - benchmarch sys exec, childProcess exec and pm2
 import { HTTP } from 'meteor/http';
-import { Random } from 'meteor/random'; //generate seed (userpass/passphrase serverside and store backup localy)
+import { Random } from 'meteor/random';
 import pm2 from 'pm2';
 import os from 'os';
 import '../imports/api/data/consist.js';
@@ -12,14 +10,12 @@ import electrumServers from '/imports/startup/config/electrum.js';
 import fs from 'fs-extra';
 import path from 'path';
 import fixPath from 'fix-path';
-//import request from 'request';
 
 let coindata = "";
 const numcoin = Number(100000000);
 const txfee = 10000;
 
 Meteor.startup(() => {
-    //UserData.remove({});
     if (os.platform() === 'darwin') {
         fixPath();
         var marketmakerBin = rootPath + '/../../../../../private/bins/marketmaker',
@@ -32,7 +28,7 @@ Meteor.startup(() => {
     }
 
     if (os.platform() === 'win32') {
-        var marketmakerBin = rootPath + '/../../../../../private/bins/marketmaker',
+        var marketmakerBin = rootPath + '/../../../../../private/bins/marketmaker.exe',
             marketmakerBin = path.normalize(marketmakerBin);
     }
     fixPath();
@@ -45,11 +41,15 @@ Meteor.startup(() => {
     Meteor.publish('tradedata', function() {
         return TradeData.find();
     });
+    Meteor.publish('swapdata', function() {
+        return SwapData.find();
+    });
 });
 
-//<------------ begin methods ------------>
 Meteor.methods({
     startWallet(passphrase) {
+        UserData.remove({});
+        TradeData.remove({});
             if(TradeData.find().count() < 1){
               TradeData.insert({
                 key: "mnzprice",
@@ -82,14 +82,13 @@ Meteor.methods({
                 'client': 1,
                 'canbind': 1,
                 'userhome': `${process.env.HOME}`,
-                'passphrase': passphrase, //hardcoded - todo: pass it from UI
+                'passphrase': passphrase,
                 'coins': coindata
             };
 
             let params = JSON.stringify(startparams);
             let home = process.env.HOME;
             params = `'${params}'`;
-            //ROOT_URL for production = 1 dep. package less
             var mm = Meteor.rootPath + '/../../../../../marketmaker';
             console.log(mm);
             console.log(passphrase);
@@ -102,7 +101,6 @@ Meteor.methods({
             Meteor.sleep(5000);
 
             try{
-              //start marketmaker via pm2
               pm2.start({
                 script    : mm,         // path to MM binary
                 exec_mode : 'fork',
@@ -155,6 +153,7 @@ Meteor.methods({
             } catch(e) {
                 throw new Meteor.Error(e);
             }
+            //todo - connect to electrum in a loop. use module electrumservers
             const paramsKMDadd = {
                 'userpass': UserData.findOne({key: "userpass"}).userpass.toString(),
                 'method': 'electrum',
@@ -183,6 +182,7 @@ Meteor.methods({
                 const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
                     data: paramsKMDadd
                 });
+
             } catch(e) {
                 throw new Meteor.Error(e);
                 return false;
@@ -203,7 +203,6 @@ Meteor.methods({
                 throw new Meteor.Error(e);
                 return false;
             }
-
             if(UserData.find().count() > 4) {
                 Meteor.call('getbalance', 'KMD');
                 Meteor.call('getbalance', 'MNZ');
@@ -250,36 +249,34 @@ Meteor.methods({
             'rel': "KMD"
           }
           var bestprice = 0;
-          var buf = 1.01 * numcoin;
+          const buf = 1.01 * numcoin;
           var price  = 0;
           try {
               const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
                   data: getprices
                 });
                 try{
-                  bestprice = Number(JSON.parse(result.content).asks[0].price.toFixed(8))*numcoin;
+                  if(JSON.parse(result.content).asks.length > 0){
+                    bestprice = Number((JSON.parse(result.content).asks[0].price*100000000).toFixed(0));
+                  }
                 }catch(e){
                   console.log(e);
                 }
               } catch(e) {
                 throw new Meteor.Error(e);
               }
-
               try {
-                  //console.log(Number((buf/numcoin * bestprice/numcoin).toFixed(8))*numcoin)
-                  TradeData.update({ key: "mnzprice" }, { $set: { price: Number((buf/numcoin * bestprice/numcoin).toFixed(8))*numcoin }});
+                 TradeData.update({ key: "mnzprice" }, { $set: { price: Number(((buf/numcoin * bestprice/numcoin).toFixed(8)*100000000).toFixed(0)) }});
               } catch(e) {
                   throw new Meteor.Error(e);
               }
         },
         buy(mnzamount, paycoin) {
-          console.log("paycoin: "+paycoin);
           var unspent = Meteor.call("listunspent", paycoin);
           if(Number(unspent.length) < 2) {
             throw new Meteor.Error("Not enough utxos!");
           }
           else{
-            console.log(paycoin);
             if(paycoin == "KMD"){
               const getprices = {
                 'userpass': UserData.findOne({key: "userpass"}).userpass,
@@ -292,12 +289,12 @@ Meteor.methods({
                   const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
                       data: getprices
                     });
-                    bestprice = Number(JSON.parse(result.content).asks[0].price.toFixed(8))*numcoin;
+                    bestprice = Number((JSON.parse(result.content).asks[0].price*100000000).toFixed(0));
                   } catch(e) {
                     throw new Meteor.Error(e);
                   }
                   var buf = 1.01 * numcoin;
-                  var bufprice = Number((buf/numcoin * bestprice/numcoin).toFixed(8))*numcoin;
+                  var bufprice = Number(((buf/numcoin * bestprice/numcoin).toFixed(8)*numcoin).toFixed(0));
                   var relvolume = Number(mnzamount/numcoin * bestprice/numcoin);
                   var buyparams = null;
                   if(relvolume*numcoin < Number(UserData.findOne({coin:paycoin}).balance + txfee)) {
@@ -313,21 +310,27 @@ Meteor.methods({
                   else {
                     throw new Meteor.Error("Not enough balance!");
                   }
+                  if(!TradeData.findOne({key: "tempswap"})){
+                    try {
+                      const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
+                          data: buyparams,
+                          timeout: 10000
+                        });
+                        TradeData.insert({
+                          key: "tempswap",
+                          tradeid: JSON.parse(result.content).pending.tradeid,
+                          expiration: JSON.parse(result.content).pending.expiration,
+                          createdAt: new Date()
+                        });
 
-                  console.log("relvol: " + relvolume.toFixed(3));
-                  console.log("price: " + Number(bufprice/numcoin).toFixed(3));
+                        return "Swap initiated - please wait min. 3 minutes before buying again!";
 
-                  try {
-                    const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
-                        data: buyparams,
-                        timeout: 10000
-                      });
-                      //console.log(result.content);
-                      return "Swap initiated - please wait up to 3 minutes before buying again!";
-
-                    } catch(e) {
-                      console.log(e);
-                      throw new Meteor.Error(e);
+                      } catch(e) {
+                        console.log(e);
+                        throw new Meteor.Error(e);
+                    }
+                  }else{
+                    throw new Meteor.Error("Already swap ongoing - please wait until finished");
                   }
             }else {
                return "BTC swap initiated";
@@ -382,6 +385,7 @@ Meteor.methods({
                 'userpass': UserData.findOne({key: "userpass"}).userpass.toString(),
                 'method': 'stop'
             };
+            TradeData.remove({});
             UserData.remove({});
             try {
                 const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
@@ -406,7 +410,7 @@ Meteor.methods({
                     pm2.disconnect();   // Disconnect from PM2
                     if (err) throw err;
                     else{
-                      console.log("stopped MM");
+                      console.log("stopped pm2");
                     }
                   });
                 }catch(e){
@@ -416,33 +420,36 @@ Meteor.methods({
             }
         },
         checkswapstatus(requestid, quoteid) {
-          if(requestid =="" && quoteid==""){
+          if(requestid =="" && quoteid=="" || requestid ==null && quoteid==null){
             const swaplist = {
               'userpass': UserData.findOne({key: "userpass"}).userpass,
-              'method': 'swapstatus',
-              'base': 'MNZ',
-              'rel': 'KMD'
+              'method': 'swapstatus'
             }
             try {
                 const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
                     data: swaplist
                   });
-                  var swaps = JSON.parse(result.content);
+                  var swaps = JSON.parse(result.content).swaps;
+                 if(TradeData.findOne({key: "tempswap"})){
+                   if(TradeData.findOne({key: "tempswap"}).expiration*1000<Date.now()){
+                       TradeData.remove({key: "tempswap"});
+                   }
+                 }
+
                   for(var i = 0; i < swaps.length; i++) {
                     var swapobj = swaps[i];
                     try {
-                        var swapobjdetail = Meteor.call('checkswapstatus', swapobj.requestid, swapobj.quoteid);
-                        //TradeData.insert({}); //insert each swapobj into our tradedata collection
+                        Meteor.call('checkswapstatus', swapobj.requestid, swapobj.quoteid);
                       } catch(e) {
                         throw new Meteor.Error(e);
                       }
                     }
-                    return true;
                   } catch(e) {
                     throw new Meteor.Error(e);
                     return false;
                   }
           }else{
+            if(quoteid!=0 && requestid!=0){
             const swapelem = {
               'userpass': UserData.findOne({key: "userpass"}).userpass,
               'method': 'swapstatus',
@@ -454,14 +461,58 @@ Meteor.methods({
                     data: swapelem
                   });
                   var swap = JSON.parse(result.content);
-                  //todo: check if is empty
-                  for(var i = 0; i < swap.length; i++) {
-                    try {
-                        //todo: go through all swap-properties
-                        //TradeData.insert({}); //create a a doc for each swapelem into our tradedata collection
-                      } catch(e) {
+                  if(!SwapData.findOne({tradeid: swap.tradeid})){
+                    try{
+                      SwapData.insert({
+                        tradeid: swap.tradeid,
+                        requestid: swap.requestid,
+                        quoteid: swap.quoteid,
+                        value: swap.values[0],
+                        status: "pending",
+                        finished: false,
+                        bobdeposit: swap.bobdeposit,
+                        alicepayment: swap.alicepayment,
+                        bobpayment: swap.bobpayment,
+                        paymentspent: swap.paymentspent,
+                        Apaymentspent: swap.Apaymentspent,
+                        depositspent: swap.depositspent,
+                        finishtime: new Date(swap.finishtime*1000).toGMTString(),
+                        createdAt: new Date()
+                      });
+                    }catch(e){
+                      throw new Meteor.Error(e);
+                    }
+                    if(SwapData.find().count()>10){
+                    SwapData.remove(SwapData.findOne({}, {sort: {sorttime: 1}})._id);
+                    }
+                  }
+                  if(SwapData.findOne({tradeid: swap.tradeid})){
+                    var time = new Date(swap.finishtime*1000).toGMTString();
+                    if(SwapData.findOne({tradeid: swap.tradeid}).Apaymentspent != "0000000000000000000000000000000000000000000000000000000000000000"){
+                      try{
+                        SwapData.update({ tradeid: swap.tradeid }, { $set: {
+                          bobdeposit: swap.bobdeposit,
+                          alicepayment: swap.alicepayment,
+                          bobpayment: swap.bobpayment,
+                          paymentspent: swap.paymentspent,
+                          Apaymentspent: swap.Apaymentspent,
+                          depositspent: swap.depositspent,
+                          value: Number(swap.values[0].toFixed(8)),
+                          finishtime: new Date(swap.finishtime*1000).toGMTString(),
+                          sorttime: swap.finishtime*1000,
+                          status: "finished",
+                          finished: true
+                        }});
+                      }catch(e){
                         throw new Meteor.Error(e);
                       }
+                    }else if(TradeData.findOne({key: "tempswap"})){
+                      if(TradeData.findOne({key: "tempswap"}).tradeid == swap.tradeid){
+                        if(swap.depositspent != "0000000000000000000000000000000000000000000000000000000000000000"){
+                          TradeData.remove({key: "tempswap"});
+                        }
+                      }
+                    }
                     }
                     return true;
                   } catch(e) {
@@ -469,6 +520,7 @@ Meteor.methods({
                     return false;
                   }
           }
+        }
         },
         callAPI(jobj) {
             try {
@@ -490,7 +542,9 @@ Meteor.setInterval(function() {
         Meteor.call('getbalance', 'KMD');
         Meteor.call('getbalance', 'MNZ');
         Meteor.call('getbalance', 'BTC');
-        Meteor.call('getprice');
-        //Meteor.call('checkswapstatus');
+    }
+    if(TradeData.find().count() > 0) {
+    Meteor.call('getprice');
+    Meteor.call("checkswapstatus");
     }
 }, 60000);

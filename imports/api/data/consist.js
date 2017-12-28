@@ -3,4 +3,4 @@ UserData = new Mongo.Collection("userdata");
 //to store price info in chronical manner - provide layer for chartJS impl.
 TradeData = new Mongo.Collection("tradedata");
 //to persist mm related data and connection information such as electrum server details, banned peers, etc.
-MarketMaker = new Mongo.Collection("marketmaker");
+SwapData = new Mongo.Collection("swapdata");

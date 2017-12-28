@@ -68,16 +68,24 @@ Template.walletview.helpers({
     }
   },
   activeSendButton: function(){
-    return Session.get("activeSendButton");
+    //return Session.get("activeSendButton");
   },
   activeAdressButton: function(){
-    return Session.get("activeAdressButton");
+    //return Session.get("activeAdressButton");
   },
   price: function(){
     //return TradeData.findOne({key:"mnzprice"}).price.toString;
+  },
+  swaps: function(){
+    return SwapData.find({}, {sort: {sorttime: -1}});
   }
 });
 
+Template.registerHelper('formatDate', function(date) {
+  return moment(date).format('MM-DD-YYYY');
+});
+
+Session.set("activeSendButton", true);
 Template.walletview.events({
   'click .kmd'(event, intance) {
     Session.set("coin", "KMD");
@@ -100,19 +108,18 @@ Template.walletview.events({
   'keyup .amount': _.throttle(function(event) {
     var value = Number(event.target.value)*numcoin;
     var userBalance = UserData.findOne({coin:Session.get("coin")}).balance;
-    console.log(userBalance);
-    console.log(value);
+
     if(userBalance > (value + 10000) && value > 0) {
-      Session.set("activeSendButton", true);
+      //Session.set("activeSendButton", true);
     } else {
-      Session.set("activeSendButton", false);
+    //  Session.set("activeSendButton", false);
     }
   }),
   'keyup .address': _.throttle(function(event) {
     if (event.target.value != "" && event.target.value.length == 34) {
-      Session.set("activeAdressButton", true);
+    //  Session.set("activeAdressButton", true);
     } else {
-      Session.set("activeAdressButton", false);
+    //  Session.set("activeAdressButton", false);
     }
   }),
  "click .sendcoins": function (event, template) {
@@ -147,7 +154,6 @@ Template.walletview.events({
 "click .buy": function (event, template) {
    event.preventDefault();
    const amount = Number(Number(template.find(".buyamount").value).toFixed(8)) * numcoin;
-   alert(amount);
 
    Meteor.call("buy", amount, "KMD", function(error, result){
      if(error) {
@@ -159,6 +165,7 @@ Template.walletview.events({
    });
  }
 });
+
 
 Template.registerHelper('and',(a,b)=>{
   return a && b;
