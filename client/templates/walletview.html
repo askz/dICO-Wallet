@@ -1,16 +1,20 @@
 <template name="walletview">
-  <button type="button" class="btn btn-secondary btn-primary btn-danger stop">Close Wallet</button>
-  <div class="container">
+  <nav class="navbar navbar-dark fixed-top">
+        <button type="button" class="btn btn-secondary btn-primary btn-success-mnz stop"><i class="glyphicon glyphicon-off"></i> Close Wallet</button>
+  </nav>
+  <div class="container walletview addrs">
     <h2>Wallet</h2>
-    <span>Your deposit {{coinsString}} address: </span>
-    <button type="button" class="btn btn-default btn-xs btn-copy-link" data-clipboard-text="{{address}}">{{address}}</button>
+    <span>Your {{coinsString}} deposit address: </span>
+    <button type="button" class="btn btn-default btn-xs btn-copy-link right address" data-clipboard-text="{{address}}">{{address}}</button>
   </div>
-
-  <div class="container">
+<div class="container qr">
+  {{> QRCode text=(address) size="128px" }}
+</div>
+  <div class="container walletview">
     <br>
     <span class="badge badge-dark balance">{{balance}}</span>
 
-    <div class="btn-group" role="group" aria-label="Basic example">
+    <div class="btn-group right" role="group" aria-label="Basic example">
       <button type="button" class="btn btn-secondary kmd
       {{#if activecoinKMD}}
         buttonactived
@@ -37,7 +41,7 @@
   </div>
   <br>
   <br>
-  <div class="container">
+  <div class="container walletview">
     <div class="">
       <h2>Withdrawal</h2>
       <div class="input-group">
@@ -53,10 +57,13 @@
       <h2>Buy MNZ</h2>
       <div class="input-group">
         <input type="number" class="form-control buyamount" aria-label="Amount" placeholder="Amount" value="0">
-          <button class="btn btn-secondary btn-success buy" type="button">Buy</button>
+        <span class="input-group-btn">
+        <button class="btn btn-secondary buy" type="button">Buy</button>
+      </span>
       </div>
       <br>
-        <table class="table table-bordered">
+      <h4>Your participations:</h4>
+        <table class="table table-bordered swaps">
         <thead>
         <tr>
           <th>tradeid</th>

@@ -8,7 +8,6 @@ import 'sweetalert/dist/sweetalert.css';
 
 Meteor.startup(function(){
 	Session.set("coin", "KMD"); //default coin is KMD
-
 	// $.getScript('https://cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js');
 });
 //return Addrs.findOne().count();

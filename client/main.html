@@ -1,19 +1,28 @@
 <head>
-  <title>theWallet v0.1</title>
+  <title>atomicDEX</title>
   <script src="//cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
 </head>
 
-<body class="container">
+<body>
   <br>
   {{#if login}}
     {{#if loading}}
-      {{> loader}}
+      <div class="container loader text-center">
+      loading wallet... {{> loader}}
+      </div>
     {{else}}
       {{> loginform}}
     {{/if}}
-  {{else}}
-    {{> walletview}}
+    {{else}}
+      {{#unless logout}}
+        {{> walletview}}
+      {{/unless}}
+      {{#if logout}}
+        <div class="container loader text-center">
+          closing wallet... {{> loader}}
+        </div>
+      {{/if}}
   {{/if}}
   <br>
-  <p class="container">dICOWallet v0.1</p>
+  {{> footer}}
 </body>

@@ -7,6 +7,7 @@ Template.walletview.onCreated(function() {
   this.autorun(() => {
       this.subscribe('userdata', {
         onReady: function () {
+          console.log("render");
           if(UserData.findOne({key:"userpass"})) {
             Session.set("login", false);
           }
@@ -22,6 +23,10 @@ Template.walletview.onCreated(function() {
 
 Template.walletview.onRendered(function() {
   var clipboard = new Clipboard('.btn-copy-link');
+});
+
+Template.registerHelper('logout', function() {
+  return Session.get("logout");
 });
 
 Template.walletview.helpers({
@@ -45,6 +50,9 @@ Template.walletview.helpers({
   },
   address: function(){
     return UserData.findOne({coin:Session.get("coin")}) && UserData.findOne({coin:Session.get("coin")}).smartaddress.toString();
+  },
+  addrx: function(){
+    return UserData.findOne({coin:Session.get("coin")}).smartaddress.toString();
   },
   activecoinKMD: function(){
     if (Session.get("coin") == "KMD") {
@@ -141,12 +149,14 @@ Template.walletview.events({
     else swal("Shit!", "Not enough balance or txfee ignored.", "error");
   },
   "click .stop": function (){
+    Session.set("logout", true);
     Meteor.call('stopwallet', function(error, result){
       if(error){
         swal("Shit!", error, "error");
       }
       else{
         Session.set("login", true);
+        //Session.set("logout", false);
         swal("Wallet successfully closed!", "Getting back to loginpage", "success");
       }
     });
@@ -155,14 +165,21 @@ Template.walletview.events({
    event.preventDefault();
    const amount = Number(Number(template.find(".buyamount").value).toFixed(8)) * numcoin;
 
-   Meteor.call("buy", amount, "KMD", function(error, result){
-     if(error) {
-       swal("Shit!", error, "error");
+   if(amount > 0){
+     Meteor.call("buy", amount, "KMD", function(error, result){
+       if(error) {
+         swal("Shit!", error, "error");
+       }
+       else{
+         swal("Buy called", "id: " + result, "success");
+       }
+     });
+   }else {
+     {
+       swal("Oops!", "Amount needs to be bigger than 0.", "error");
      }
-     else{
-       swal("Buy called", "id: " + result, "success");
-     }
-   });
+   }
+
  }
 });
 
