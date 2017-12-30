@@ -10,6 +10,7 @@ Template.walletview.onCreated(function() {
           console.log("render");
           if(UserData.findOne({key:"userpass"})) {
             Session.set("login", false);
+            Session.set("logout", false);
           }
           else {
             Session.set("login", true);

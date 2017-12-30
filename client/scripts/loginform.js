@@ -19,6 +19,7 @@ Template.loginform.onCreated(function() {
           //once data is ready set some session vars to have specific STATIC data ready (userpass, smartaddresses)
           if(UserData.findOne({key:"userpass"})) {
             Session.set("login", false);
+            Session.set("logout", false);
           }
           else {
             Session.set("login", true);
@@ -47,7 +48,7 @@ Template.loginform.events({
            else{
              Session.set("loading", false);
              Session.set("login", false);
-             //console.log("login_event");
+             Session.set("logout", false);
              swal("Thank you!", "Your passphrase is: " + pass + "\n"
              + "Please back this up in a secure place!", "success");
              //Session.set("login", flase);
