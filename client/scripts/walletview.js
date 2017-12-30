@@ -1,6 +1,3 @@
-import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
-
 const numcoin = Number(100000000);
 
 Template.walletview.onCreated(function() {
@@ -140,7 +137,7 @@ Template.walletview.events({
     {
       Meteor.call("sendtoaddress", Session.get("coin"), addr, amount, function(error, result) {
         if(error) {
-          swal("Shit!", error, "error");
+          swal("Oops!", error, "error");
         }
         else{
           swal("Transaction sent", "txid: " + result, "success");
@@ -153,7 +150,7 @@ Template.walletview.events({
     Session.set("logout", true);
     Meteor.call('stopwallet', function(error, result){
       if(error){
-        swal("Shit!", error, "error");
+        swal("Oops!", error, "error");
       }
       else{
         Session.set("login", true);
@@ -169,7 +166,7 @@ Template.walletview.events({
    if(amount > 0){
      Meteor.call("buy", amount, "KMD", function(error, result){
        if(error) {
-         swal("Shit!", error, "error");
+         swal("Oops!", error, "error");
        }
        else{
          swal("Buy called", "id: " + result, "success");

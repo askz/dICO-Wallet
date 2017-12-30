@@ -6,8 +6,9 @@ import { Session } from 'meteor/session';
 import sweetalert from 'sweetalert';
 import 'sweetalert/dist/sweetalert.css';
 
+import './scripts/loginform.js';
+import './scripts/walletview.js';
+
 Meteor.startup(function(){
 	Session.set("coin", "KMD"); //default coin is KMD
-	// $.getScript('https://cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js');
 });
-//return Addrs.findOne().count();
