@@ -66,13 +66,6 @@ Template.walletview.helpers({
       return false;
     }
   },
-  activecoinMNZ: function(){
-    if (Session.get("coin") == "MNZ") {
-      return true;
-    } else {
-      return false;
-    }
-  },
   activeSendButton: function(){
     //return Session.get("activeSendButton");
   },
@@ -81,10 +74,19 @@ Template.walletview.helpers({
   },
   price: function(){
     //return TradeData.findOne({key:"mnzprice"}).price.toString;
-  },
-  swaps: function(){
-    return SwapData.find({}, {sort: {sorttime: -1}});
   }
+});
+
+Template.registerHelper('swaps',() =>{
+    return SwapData.find({}, {sort: {sorttime: -1}});
+});
+
+Template.registerHelper('activecoinMNZ',() =>{
+    if (Session.get("coin") == "MNZ") {
+      return true;
+    } else {
+      return false;
+    }
 });
 
 Template.registerHelper('formatDate', function(date) {

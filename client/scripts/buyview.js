@@ -8,11 +8,11 @@ const defaultValueMIN = 5;
 const defaultValueMAX = 1000;
 
 priceCoins = function(value){
-  if (Session.get("coin") == "KMD") {
+  if (Session.get("currentBuyCoin") == "KMD") {
     // CALL PRICE FOR ONE KMZ_MNZ and replace priceKMZ_MNZ variable.
     var priceKMZ_MNZ = 6666666;
     Session.set("currentvalue", (value * priceKMZ_MNZ) / numcoin);
-  } else if (Session.get("coin")=="BTC") {
+  } else if (Session.get("currentBuyCoin") == "BTC") {
     // CALL PRICE FOR ONE BTC_MNZ and replace priceBTC_MNZ variable.
     var priceBTC_MNZ = 1666;
     Session.set("currentvalue", (value * priceBTC_MNZ) / numcoin) ;
@@ -72,18 +72,33 @@ Template.buyview.helpers({
   },
   defaultValueMAX: function(){
     return defaultValueMAX;
+  },
+  categories: function(){
+    return ["KMD", "BTC"];
   }
 });
 
 Template.buyview.events({
   'click .buy'(event, instance) {
     if (Session.get("disableBuy") == false) {
-      //simulate CALL BUY
-      Session.set("isBuying", true);
-      setTimeout(function(){
-        Session.set("isBuying", false);
-        swal("Buy success");
-      }, 2000);
+      event.preventDefault();
+      const amount = Number(Number(instance.find("#buyamount").value).toFixed(8)) * numcoin;
+      console.log(amount);
+      if(amount > 0){
+        Session.set("isBuying", true);
+        Meteor.call("buy", amount, Session.get("currentBuyCoin"), function(error, result){
+          if(error) {
+            Session.set("isBuying", false);
+            swal("Oops!", error, "error");
+          }
+          else{
+            Session.set("isBuying", false);
+            swal("Buy called", "id: " + result, "success");
+          }
+        });
+      } else {
+        swal("Oops!", "Amount needs to be bigger than 0.", "error");
+      }
     }
   },
   "click [type='number']"(event, instance) {
@@ -95,5 +110,9 @@ Template.buyview.events({
   'keyup .inputmnz'(event, instance) {
     handleBuyButton(event.target.value);
     priceCoins(event.target.value);
+  },
+  'change #category-select'(event, template) {
+      Session.set("currentBuyCoin", event.target.value.toString());
+      $('#buyamount').val(defaultValueMIN);
   }
 });

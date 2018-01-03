@@ -2,11 +2,15 @@
   <br>
   <br>
   <div class="container">
-    <h2>Buy Monaize with {{coinsString}}</h2>
+    <h2>Buy Monaize</h2>
     <div class="input-group">
-      <span class="input-group-addon"><span>MNZ</span></span>
-      <input type="number" name="quant[2]" class="form-control input-number inputmnz" value="{{defaultValueMIN}}" min="{{defaultValueMIN}}" max="{{defaultValueMAX}}" step="{{defaultValueMIN}}">
-      <span class="input-group-addon"><span>{{currentvalue}} {{currentcoin}}</span></span>
+      <input id="buyamount" type="number" name="quant[2]" class="form-control input-number inputmnz" value="{{defaultValueMIN}}" min="{{defaultValueMIN}}" max="{{defaultValueMAX}}" step="{{defaultValueMIN}}">
+      <span class="input-group-addon">MNZ for {{currentvalue}}</span>
+      <select id="category-select" class="form-control">
+        {{#each categories}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
       <span class="input-group-btn">
         {{#if isBuying}}
           {{> loader}}

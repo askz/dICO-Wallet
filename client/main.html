@@ -16,11 +16,12 @@
       {{> spinner}}
     {{else}}
       {{> walletview}}
-      {{#if showbuyview}}
+      {{#if activecoinMNZ}}
         {{> buyview}}
+        {{> swapstatusview}}
       {{/if}}
       {{> withdrawalview}}
-     {{/if}} 
+     {{/if}}
   {{/if}}
   <br>
   {{> footer}}
