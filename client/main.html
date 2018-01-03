@@ -3,25 +3,24 @@
   <script src="//cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
 </head>
 
-<body>
+<body class="container">
   <br>
   {{#if login}}
     {{#if loading}}
-      <div class="container loader text-center">
-      loading wallet... {{> loader}}
-      </div>
+      {{> spinner}}
     {{else}}
       {{> loginform}}
     {{/if}}
+  {{else}}
+    {{#if loading}}
+      {{> spinner}}
     {{else}}
-      {{#unless logout}}
-        {{> walletview}}
-      {{/unless}}
-      {{#if logout}}
-        <div class="container loader text-center">
-          closing wallet... {{> loader}}
-        </div>
+      {{> walletview}}
+      {{#if showbuyview}}
+        {{> buyview}}
       {{/if}}
+      {{> withdrawalview}}
+     {{/if}} 
   {{/if}}
   <br>
   {{> footer}}

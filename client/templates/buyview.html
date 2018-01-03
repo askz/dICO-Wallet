@@ -1,0 +1,23 @@
+<template name="buyview">
+  <br>
+  <br>
+  <div class="container">
+    <h2>Buy Monaize with {{coinsString}}</h2>
+    <div class="input-group">
+      <span class="input-group-addon"><span>MNZ</span></span>
+      <input type="number" name="quant[2]" class="form-control input-number inputmnz" value="{{defaultValueMIN}}" min="{{defaultValueMIN}}" max="{{defaultValueMAX}}" step="{{defaultValueMIN}}">
+      <span class="input-group-addon"><span>{{currentvalue}} {{currentcoin}}</span></span>
+      <span class="input-group-btn">
+        {{#if isBuying}}
+          {{> loader}}
+        {{else}}
+          <button type="submit" href="#" class="btn btn-primary btn-success pull-right buy
+          {{#if disableBuy}}
+            disableBuy
+          {{/if}}
+          ">Buy</button>
+        {{/if}}
+      </span>
+    </div>
+  </div>
+</template>
