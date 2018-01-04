@@ -78,15 +78,6 @@ Template.walletview.helpers({
       return false;
     }
   },
-  activeSendButton: function(){
-    //return Session.get("activeSendButton");
-  },
-  activeAdressButton: function(){
-    //return Session.get("activeAdressButton");
-  },
-  price: function(){
-    //return TradeData.findOne({key:"mnzprice"}).price.toString;
-  },
   activecoinMNZ: function(){
     if (Session.get("coin") == "MNZ") {
       return true;
