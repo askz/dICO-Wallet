@@ -259,6 +259,7 @@ Meteor.methods({
                     while(JSON.parse(result.content).asks[i].maxvolume == 0){
                       i++;
                     }
+                    console.log(JSON.parse(result.content).asks[i]);
                     bestprice = Number((JSON.parse(result.content).asks[i].price*100000000).toFixed(0));
                     console.log("best price: "+bestprice);
                   }
@@ -323,7 +324,8 @@ Meteor.methods({
                           data: buyparams,
                           timeout: 10000
                         });
-
+                        console.log("You are spending: "+relvolume.toFixed(3)+" KMD for "+Number(bufprice/numcoin).toFixed(3) + "KMD each and resulting in "+relvolume.toFixed(3)/Number(bufprice/numcoin).toFixed(3)+"MNZ");
+                        console.log(JSON.parse(result.content));
                         try{
                           TradeData.insert({
                             key: "tempswap",
