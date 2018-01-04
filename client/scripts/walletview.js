@@ -125,7 +125,7 @@ Template.walletview.events({
     var value = Number(event.target.value)*numcoin;
     var userBalance = UserData.findOne({coin:Session.get("coin")}).balance;
     //Session.set()
-    console.log(value);
+    //console.log(value);
     if(userBalance > (value + 10000) && value > 0) {
       //Session.set("activeSendButton", true);
     } else {
