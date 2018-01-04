@@ -4,7 +4,7 @@ import sweetalert from 'sweetalert';
 import 'sweetalert/dist/sweetalert.css';
 
 const numcoin = Number(100000000);
-const defaultValueMIN = 5;
+const defaultValueMIN = 1;
 const defaultValueMAX = 1000;
 
 priceCoins = function(value){
