@@ -247,7 +247,7 @@ Meteor.methods({
             'rel': "KMD"
           }
           var bestprice = 0;
-          const buf = 1.01 * numcoin;
+          const buf = 1.03 * numcoin;
           var price  = 0;
           try {
               const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
@@ -300,7 +300,7 @@ Meteor.methods({
                   } catch(e) {
                     throw new Meteor.Error(e);
                   }
-                  var buf = 1.01 * numcoin;
+                  var buf = 1.03 * numcoin;
                   var bufprice = Number(((buf/numcoin * bestprice/numcoin).toFixed(8)*numcoin).toFixed(0));
                   var relvolume = Number(mnzamount/numcoin * bestprice/numcoin);
                   var buyparams = null;
