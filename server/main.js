@@ -333,7 +333,7 @@ Meteor.methods({
                             expiration: JSON.parse(result.content).pending.expiration,
                             requestid: 0,
                             quoteid: 0,
-                            value: 0,
+                            value: mnzamount,
                             status: "pending",
                             finished: false,
                             bobdeposit: 0,
@@ -465,13 +465,21 @@ Meteor.methods({
                        TradeData.remove({key: "tempswap"});
                    }
                  }
-                 for(var i = 0; i <SwapData.find({swaplist:false}).count(); i++){
-                   var tswap = SwapData.findOne({swaplist:false});
-                   if(tswap.expiration*1000+1200000<Date.now()){
-                     console.log("found timedout swap");
-                     SwapData.remove(tswap._id);
-                   }
-                 }
+                   var tswaps = SwapData.find({swaplist:false});
+                   tswaps.forEach((swapelem) => {
+                     if(swapelem.expiration*1000+1200000<Date.now()){
+                       try{
+                         SwapData.update({ tradeid: swapelem.tradeid }, { $set: {
+                           status: "timedout",
+                           finished: true,
+                           Apaymentspent: 1
+                         }});
+                       }catch(e){
+                         throw new Meteor.Error(e);
+                       }
+                     }
+                   });
+
                   for(var i = 0; i < swaps.length; i++) {
                     var swapobj = swaps[i];
                     try {
@@ -514,9 +522,7 @@ Meteor.methods({
                           depositspent: swap.depositspent,
                           swaplist: true,
                           finishtime: new Date(swap.finishtime*1000).toGMTString(),
-                          sorttime: swap.finishtime*1000,
-                          createdAt: new Date()
-                        }});
+                          sorttime: swap.finishtime*1000                        }});
                       }catch(e){
                         throw new Meteor.Error(e);
                       }
