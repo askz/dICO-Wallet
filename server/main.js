@@ -344,7 +344,7 @@ Meteor.methods({
                             finished: false,
                             bobdeposit: 0,
                             alicepayment: 0,
-                            bobpayment: 0,
+                            bobpayment: "0000000000000000000000000000000000000000000000000000000000000000",
                             paymentspent: 0,
                             Apaymentspent: "0000000000000000000000000000000000000000000000000000000000000000",
                             depositspent: 0,
@@ -512,7 +512,7 @@ Meteor.methods({
                   });
                   var swap = JSON.parse(result.content);
                   if(SwapData.findOne({tradeid: swap.tradeid})){
-                    if(SwapData.findOne({tradeid: swap.tradeid}).Apaymentspent == "0000000000000000000000000000000000000000000000000000000000000000"){
+                    if(SwapData.findOne({tradeid: swap.tradeid}).bobpayment == "0000000000000000000000000000000000000000000000000000000000000000"){
                       try{
                         SwapData.update({ tradeid: swap.tradeid }, { $set: {
                           requestid: swap.requestid,
@@ -533,7 +533,7 @@ Meteor.methods({
                         throw new Meteor.Error(e);
                       }
                     }else{
-                      if(SwapData.findOne({tradeid: swap.tradeid}).depositspent == "0000000000000000000000000000000000000000000000000000000000000000"){
+                      if(SwapData.findOne({tradeid: swap.tradeid}).bobpayment != "0000000000000000000000000000000000000000000000000000000000000000"){
                         try{
                           SwapData.update({ tradeid: swap.tradeid }, { $set: {
                             bobdeposit: swap.bobdeposit,
