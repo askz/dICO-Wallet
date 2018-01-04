@@ -30,9 +30,9 @@ handleBuyButton = function(value){
     Session.set("disableBuy", true);
   }
 
-  if (UserData.findOne({coin:Session.get("coin")})) {
+  if (UserData.findOne({coin:Session.get("currentBuyCoin")})) {
     value = Number(value)*numcoin;
-    var userBalance = UserData.findOne({coin:Session.get("coin")}).balance;
+    var userBalance = UserData.findOne({coin:Session.get("currentBuyCoin")}).balance;
     if (userBalance > (value + 10000)) {
       Session.set("disableBuy", false);
     } else {
@@ -48,6 +48,7 @@ isDecimal = function(n) {
 
 Template.buyview.onCreated(function() {
   this.autorun(() => {
+    Session.get("currentBuyCoin", "KMD");
     Session.set("currentvalue", defaultValueMIN);
     Session.set("isBuying", false);
     priceCoins(defaultValueMIN);
