@@ -15,13 +15,6 @@
     {{#if loading}}
       {{> spinner}}
     {{else}}
-      {{#unless logout}}
-        {{> walletview}}
-      {{/unless}}
-      {{#if logout}}
-        <div class="container loader text-center">
-          closing wallet... {{> loader}}
-        </div>
       {{> walletview}}
       {{#if activecoinMNZ}}
         {{> buyview}}
