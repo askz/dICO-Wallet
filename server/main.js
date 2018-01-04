@@ -471,7 +471,7 @@ Meteor.methods({
                  }
                    var tswaps = SwapData.find({swaplist:false});
                    tswaps.forEach((swapelem) => {
-                     if(swapelem.expiration*1000+1200000<Date.now()){
+                     if(swapelem.expiration*1000+12000000<Date.now()){
                        try{
                          SwapData.update({ tradeid: swapelem.tradeid }, { $set: {
                            status: "timedout",
