@@ -14,24 +14,25 @@ import fixPath from 'fix-path';
 let coindata = "";
 const numcoin = Number(100000000);
 const txfee = 10000;
+var marketmakerBin = "";
 
 Meteor.startup(() => {
     if (os.platform() === 'darwin') {
         fixPath();
-        var marketmakerBin = rootPath + '/../../../../../private/bins/marketmaker',
-            marketmakerDir = `${process.env.HOME}/Library/Application Support/marketmaker`;
+        marketmakerBin = Meteor.rootPath + '/../../../../../marketmaker',
+        marketmakerDir = `${process.env.HOME}/Library/Application Support/marketmaker`;
     }
 
     if (os.platform() === 'linux') {
-        var marketmakerBin = rootPath + '/../../../../../private/bins/marketmaker',
-            marketmakerDir = `${process.env.HOME}/.marketmaker`;
+        marketmakerBin = Meteor.rootPath + '/../../../../../marketmaker',
+        marketmakerDir = `${process.env.HOME}/.marketmaker`;
     }
 
     if (os.platform() === 'win32') {
-        var marketmakerBin = rootPath + '/../../../../../private/bins/marketmaker.exe',
-            marketmakerBin = path.normalize(marketmakerBin);
+        marketmakerBin = Meteor.rootPath + '/../../../../../marketmaker.exe',
+        marketmakerBin = path.normalize(marketmakerBin);
     }
-    fixPath();
+
     var coinFile = 'static/coins.json';
     coindata = JSON.parse(Assets.getText(coinFile));
 
@@ -89,9 +90,6 @@ Meteor.methods({
             let params = JSON.stringify(startparams);
             let home = process.env.HOME;
             params = `'${params}'`;
-            var mm = Meteor.rootPath + '/../../../../../marketmaker';
-            console.log(mm);
-            console.log(passphrase);
             pm2.connect(function(err) { //start up pm2 god
               if (err) {
                 console.error(err);
@@ -102,7 +100,7 @@ Meteor.methods({
 
             try{
               pm2.start({
-                script    : mm,         // path to MM binary
+                script    : marketmakerBin,         // path to MM binary
                 exec_mode : 'fork',
                 //cwd: home, //set correct working dir for MM data
                 args: params,  //stringified params
@@ -258,7 +256,7 @@ Meteor.methods({
                 try{
                   if(JSON.parse(result.content).asks.length > 0){
                     bestprice = Number((JSON.parse(result.content).asks[0].price*100000000).toFixed(0));
-                    console.log("best price: "+bestprice);
+                    //console.log("best price: "+bestprice);
                   }
                 }catch(e){
                   console.log(e);
@@ -267,7 +265,11 @@ Meteor.methods({
                 throw new Meteor.Error(e);
               }
               try {
-                 TradeData.update({ key: "mnzprice" }, { $set: { price: Number(((buf/numcoin * bestprice/numcoin).toFixed(8)*100000000).toFixed(0)) }});
+                 if(bestprice > 0){
+                   TradeData.update({ key: "mnzprice" }, { $set: { price: Number(((buf/numcoin * bestprice/numcoin).toFixed(8)*100000000).toFixed(0)) }});
+                 }else{
+                   TradeData.update({ key: "mnzprice" }, { $set: { price: 0 }});
+                 }
               } catch(e) {
                   throw new Meteor.Error(e);
               }
@@ -328,6 +330,7 @@ Meteor.methods({
 
                           SwapData.insert({
                             tradeid: JSON.parse(result.content).pending.tradeid,
+                            expiration: JSON.parse(result.content).pending.expiration,
                             requestid: 0,
                             quoteid: 0,
                             value: 0,
@@ -340,6 +343,7 @@ Meteor.methods({
                             Apaymentspent: "0000000000000000000000000000000000000000000000000000000000000000",
                             depositspent: 0,
                             sorttime: 0,
+                            swaplist: false,
                             finishtime: new Date().toGMTString(),
                             createdAt: new Date()
                           });
@@ -461,7 +465,13 @@ Meteor.methods({
                        TradeData.remove({key: "tempswap"});
                    }
                  }
-
+                 for(var i = 0; i <SwapData.find({swaplist:false}).count(); i++){
+                   var tswap = SwapData.findOne({swaplist:false});
+                   if(tswap.expiration*1000+1200000<Date.now()){
+                     console.log("found timedout swap");
+                     SwapData.remove(tswap._id);
+                   }
+                 }
                   for(var i = 0; i < swaps.length; i++) {
                     var swapobj = swaps[i];
                     try {
@@ -502,6 +512,7 @@ Meteor.methods({
                           paymentspent: swap.paymentspent,
                           Apaymentspent: swap.Apaymentspent,
                           depositspent: swap.depositspent,
+                          swaplist: true,
                           finishtime: new Date(swap.finishtime*1000).toGMTString(),
                           sorttime: swap.finishtime*1000,
                           createdAt: new Date()
