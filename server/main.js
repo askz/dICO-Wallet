@@ -333,7 +333,7 @@ Meteor.methods({
                             expiration: JSON.parse(result.content).pending.expiration,
                             requestid: 0,
                             quoteid: 0,
-                            value: mnzamount,
+                            value: mnzamount/numcoin,
                             status: "pending",
                             finished: false,
                             bobdeposit: 0,
