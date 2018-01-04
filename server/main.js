@@ -512,7 +512,7 @@ Meteor.methods({
                           paymentspent: swap.paymentspent,
                           Apaymentspent: swap.Apaymentspent,
                           depositspent: swap.depositspent,
-                          foundswaplist: true,
+                          swaplist: true,
                           finishtime: new Date(swap.finishtime*1000).toGMTString(),
                           sorttime: swap.finishtime*1000,
                           createdAt: new Date()
