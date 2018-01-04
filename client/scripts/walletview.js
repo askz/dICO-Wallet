@@ -16,6 +16,18 @@ Template.walletview.onCreated(function() {
         onError: function () {
         }
       });
+      this.subscribe('tradedata', {
+        onReady: function () {
+          try{
+            Session.set("price", TradeData.findOne({key:"mnzprice"}).price/numcoin)
+          }
+          catch(e){
+            Session.set("price", "NaN");
+          }
+        },
+        onError: function () {
+        }
+      });
     });
 });
 
@@ -73,14 +85,16 @@ Template.walletview.helpers({
       return false;
     }
   },
-  activeSendButton: function(){
-    //return Session.get("activeSendButton");
-  },
-  activeAdressButton: function(){
-    //return Session.get("activeAdressButton");
-  },
   price: function(){
-    //return TradeData.findOne({key:"mnzprice"}).price.toString;
+    if(Session.get("price")==0){
+      return NaN;
+    }
+    else{
+      return Session.get("price");
+    }
+  },
+  total: function(){
+    return Session.get("price"); //* Session.get("buyamount")/numcoin;
   },
   swaps: function(){
     return SwapData.find({}, {sort: {sorttime: -1}});
@@ -95,32 +109,32 @@ Session.set("activeSendButton", true);
 Template.walletview.events({
   'click .kmd'(event, intance) {
     Session.set("coin", "KMD");
-    //Meteor.call('sendtoaddress', amount, address, coin);
   },
   'click .btc'(event, intance) {
     Session.set("coin", "BTC");
-    //Meteor.call('sendtoaddress', amount, address, coin);
   },
   'click .mnz'(event, intance) {
     Session.set("coin", "MNZ");
-    //Meteor.call('sendtoaddress', amount, address, coin);
   },
   "change #coin-select": function (event, template) {
       var coin = $(event.currentTarget).val();
       Session.set("coin", coin);
-      // alert(coin);
 
   },
   'keyup .amount': _.throttle(function(event) {
     var value = Number(event.target.value)*numcoin;
     var userBalance = UserData.findOne({coin:Session.get("coin")}).balance;
-
+    //Session.set()
+    console.log(value);
     if(userBalance > (value + 10000) && value > 0) {
       //Session.set("activeSendButton", true);
     } else {
     //  Session.set("activeSendButton", false);
     }
   }),
+  'keyup .buyamount': function(event) {
+    Session.set("buyamount", Number(event.target.value)*numcoin);
+  },
   'keyup .address': _.throttle(function(event) {
     if (event.target.value != "" && event.target.value.length == 34) {
     //  Session.set("activeAdressButton", true);
@@ -154,7 +168,6 @@ Template.walletview.events({
       }
       else{
         Session.set("login", true);
-        //Session.set("logout", false);
         swal("Wallet successfully closed!", "Getting back to loginpage", "success");
       }
     });
