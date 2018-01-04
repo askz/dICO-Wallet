@@ -255,8 +255,12 @@ Meteor.methods({
                 });
                 try{
                   if(JSON.parse(result.content).asks.length > 0){
-                    bestprice = Number((JSON.parse(result.content).asks[0].price*100000000).toFixed(0));
-                    //console.log("best price: "+bestprice);
+                    var i = 0;
+                    while(JSON.parse(result.content).asks[i].maxvolume == 0){
+                      i++;
+                    }
+                    bestprice = Number((JSON.parse(result.content).asks[i].price*100000000).toFixed(0));
+                    console.log("best price: "+bestprice);
                   }
                 }catch(e){
                   console.log(e);
@@ -333,7 +337,7 @@ Meteor.methods({
                             expiration: JSON.parse(result.content).pending.expiration,
                             requestid: 0,
                             quoteid: 0,
-                            value: mnzamount,
+                            value: mnzamount/numcoin,
                             status: "pending",
                             finished: false,
                             bobdeposit: 0,
