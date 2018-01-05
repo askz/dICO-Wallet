@@ -349,6 +349,7 @@ Meteor.methods({
                             key: "tempswap",
                             tradeid: JSON.parse(result.content).pending.tradeid,
                             aliceid: alice.substr(0,8),
+                            paycoin: paycoin,
                             expiration: JSON.parse(result.content).pending.expiration,
                             createdAt: new Date()
                           });
@@ -362,6 +363,8 @@ Meteor.methods({
                             aliceid: alice.substr(0,8),
                             status: "pending",
                             finished: false,
+                            paycoin: paycoin,
+                            price: Number(bufprice/numcoin).toFixed(3),
                             bobdeposit: 0,
                             alicepayment: 0,
                             bobpayment: "0000000000000000000000000000000000000000000000000000000000000000",
@@ -537,7 +540,7 @@ Meteor.methods({
                         SwapData.update( {aliceid: alice.substr(0,8)}, { $set: {
                           requestid: swap.requestid,
                           quoteid: swap.quoteid,
-                          value: swap.values[0],
+                          //value: swap.values[0],
                           status: "pending",
                           finished: false,
                           aliceid: alice.substr(0,8),
