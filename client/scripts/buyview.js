@@ -4,17 +4,18 @@ import sweetalert from 'sweetalert';
 import 'sweetalert/dist/sweetalert.css';
 
 const numcoin = Number(100000000);
-const defaultValueMIN = 1;
-const defaultValueMAX = 1000;
+const defaultValueMIN = 0.1;
+const defaultValueMAX = 100;
 
 priceCoins = function(value){
   if (Session.get("currentBuyCoin") == "KMD") {
     // CALL PRICE FOR ONE KMZ_MNZ and replace priceKMZ_MNZ variable.
-    var priceKMZ_MNZ = 6666666;
-    Session.set("currentvalue", (value * priceKMZ_MNZ) / numcoin);
+    var priceKMZ_MNZ = Session.get("price");
+    console.log (priceKMZ_MNZ);
+    Session.set("currentvalue", (value * priceKMZ_MNZ));
   } else if (Session.get("currentBuyCoin") == "BTC") {
     // CALL PRICE FOR ONE BTC_MNZ and replace priceBTC_MNZ variable.
-    var priceBTC_MNZ = 1666;
+    var priceBTC_MNZ = 6666;
     Session.set("currentvalue", (value * priceBTC_MNZ) / numcoin) ;
   } else {
     return 0;
