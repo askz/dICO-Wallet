@@ -3,10 +3,12 @@
   <table class="table table-bordered swaps">
     <thead>
       <tr>
-      <th>tradeid</th>
-      <th>amount</th>
-      <th>status</th>
-      <th>date</th>
+        <th>tradeid</th>
+        <th>MNZ amount</th>
+        <th>status</th>
+        <th>price per MNZ</th>
+        <th>paid with</th>
+        <th>date</th>
       </tr>
     </thead>
 
@@ -20,9 +22,11 @@
 
 <template name="swap">
   <tr>
-  <td>{{tradeid}}</td>
-  <td>{{value}}</td>
-  <td>{{status}} {{#unless finished}} {{> sloader}} {{/unless}}{{#if finished}}{{> check}}{{/if}}</td>
-  <td>{{finishtime}}</td>
+    <td>{{tradeid}}</td>
+    <td>{{value}}</td>
+    <td>{{status}} {{#unless finished}} {{> sloader}} {{/unless}}{{#if finished}}{{> check}}{{/if}}</td>
+    <td>{{price}}</td>
+    <td>{{paycoin}}</td>
+    <td>{{finishtime}}</td>
   </tr>
 </template>
