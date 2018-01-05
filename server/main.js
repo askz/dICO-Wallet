@@ -108,11 +108,11 @@ Meteor.methods({
                 pm2.disconnect();   // Disconnect from PM2
                 if (err) throw err;
                 else{
-                  console.log("started MM");
+                  //console.log("started MM");
                 }
               });
             }catch(e){
-              console.log(e);
+              throw new Meteor.Error(e);
             }
             Meteor.sleep(5000);
 
@@ -256,14 +256,14 @@ Meteor.methods({
                 try{
                   if(JSON.parse(result.content).asks.length > 0){
                     var i = 0;
-                    while(JSON.parse(result.content).asks[i].maxvolume == 0 && i < JSON.parse(result.content).asks.length){
+                    while(JSON.parse(result.content).asks[i].maxvolume == 0 && i < JSON.parse(result.content).asks.length - 1){
                       i++;
                     }
                     if(JSON.parse(result.content).asks[i].maxvolume > 0){
-                      console.log(JSON.parse(result.content).asks[i]);
+                      //console.log(JSON.parse(result.content).asks[i]);
                       bestprice = Number((JSON.parse(result.content).asks[i].price*100000000).toFixed(0));
                     }
-                    console.log("best price: "+bestprice);
+                    //console.log("best price: "+bestprice);
                   }
                 }catch(e){
                   console.log(e);
@@ -341,8 +341,8 @@ Meteor.methods({
                           data: buyparams,
                           timeout: 10000
                         });
-                        console.log("You are spending: "+relvolume.toFixed(3)+" KMD for "+Number(bufprice/numcoin).toFixed(3) + "KMD each and resulting in "+relvolume.toFixed(3)/Number(bufprice/numcoin).toFixed(3)+"MNZ");
-                        console.log(JSON.parse(result.content));
+                        //console.log("You are spending: "+relvolume.toFixed(3)+" KMD for "+Number(bufprice/numcoin).toFixed(3) + "KMD each and resulting in "+relvolume.toFixed(3)/Number(bufprice/numcoin).toFixed(3)+"MNZ");
+                        //console.log(JSON.parse(result.content));
                         var alice = JSON.parse(result.content).pending.aliceid.toString();
                         try{
                           TradeData.insert({
@@ -462,14 +462,14 @@ Meteor.methods({
                   pm2.stop("marketmaker", function(err, apps) {
                     if (err) throw err;
                     else{
-                      console.log("stopped MM");
+                      //console.log("stopped MM");
                     }
                   });
                   pm2.kill(function(err, apps) {
                     pm2.disconnect();   // Disconnect from PM2
                     if (err) throw err;
                     else{
-                      console.log("stopped pm2");
+                      //console.log("stopped pm2");
                     }
                   });
                 }catch(e){
@@ -559,7 +559,7 @@ Meteor.methods({
                     }else{
                       if(SwapData.findOne({aliceid: alice.substr(0,8)}).bobpayment != "0000000000000000000000000000000000000000000000000000000000000000"){
                         try{
-                          SwapData.update({ tradeid: swap.tradeid }, { $set: {
+                          SwapData.update({aliceid: alice.substr(0,8)}, { $set: {
                             bobdeposit: swap.bobdeposit,
                             alicepayment: swap.alicepayment,
                             bobpayment: swap.bobpayment,
