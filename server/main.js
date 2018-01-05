@@ -112,7 +112,7 @@ Meteor.methods({
                 }
               });
             }catch(e){
-              console.log(e);
+              throw new Meteor.Error(e);
             }
             Meteor.sleep(5000);
 
@@ -256,7 +256,7 @@ Meteor.methods({
                 try{
                   if(JSON.parse(result.content).asks.length > 0){
                     var i = 0;
-                    while(JSON.parse(result.content).asks[i].maxvolume == 0 && i < JSON.parse(result.content).asks.length){
+                    while(JSON.parse(result.content).asks[i].maxvolume == 0 && i < JSON.parse(result.content).asks.length - 1){
                       i++;
                     }
                     if(JSON.parse(result.content).asks[i].maxvolume > 0){
@@ -559,7 +559,7 @@ Meteor.methods({
                     }else{
                       if(SwapData.findOne({aliceid: alice.substr(0,8)}).bobpayment != "0000000000000000000000000000000000000000000000000000000000000000"){
                         try{
-                          SwapData.update({ tradeid: swap.tradeid }, { $set: {
+                          SwapData.update({aliceid: alice.substr(0,8)}, { $set: {
                             bobdeposit: swap.bobdeposit,
                             alicepayment: swap.alicepayment,
                             bobpayment: swap.bobpayment,
