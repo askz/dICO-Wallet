@@ -256,10 +256,13 @@ Meteor.methods({
                 try{
                   if(JSON.parse(result.content).asks.length > 0){
                     var i = 0;
-                    while(JSON.parse(result.content).asks[i].maxvolume == 0){
+                    while(JSON.parse(result.content).asks[i].maxvolume == 0 && i < JSON.parse(result.content).asks.length){
                       i++;
                     }
-                    bestprice = Number((JSON.parse(result.content).asks[i].price*100000000).toFixed(0));
+                    if(JSON.parse(result.content).asks[i].maxvolume > 0){
+                      console.log(JSON.parse(result.content).asks[i]);
+                      bestprice = Number((JSON.parse(result.content).asks[i].price*100000000).toFixed(0));
+                    }
                     console.log("best price: "+bestprice);
                   }
                 }catch(e){
@@ -296,7 +299,22 @@ Meteor.methods({
                   const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
                       data: getprices
                     });
-                    bestprice = Number((JSON.parse(result.content).asks[0].price*100000000).toFixed(0));
+                    //bestprice = Number((JSON.parse(result.content).asks[0].price*100000000).toFixed(0));
+                    try{
+                      if(JSON.parse(result.content).asks.length > 0){
+                        var i = 0;
+                        while(JSON.parse(result.content).asks[i].maxvolume == 0 && i < JSON.parse(result.content).asks.length){
+                          i++;
+                        }
+                        if(JSON.parse(result.content).asks[i].maxvolume > 0){
+                          //console.log(JSON.parse(result.content).asks[i]);
+                          bestprice = Number((JSON.parse(result.content).asks[i].price*100000000).toFixed(0));
+                        }
+                        //console.log("best price: "+bestprice);
+                      }
+                    }catch(e){
+                      console.log(e);
+                    }
                   } catch(e) {
                     throw new Meteor.Error(e);
                   }
@@ -317,17 +335,20 @@ Meteor.methods({
                   else {
                     throw new Meteor.Error("Not enough balance!");
                   }
-                  if(!TradeData.findOne({key: "tempswap"}) && bestprice>0){
+                  if(!TradeData.findOne({key: "tempswap"}) && bestprice > 0){
                     try {
                       const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
                           data: buyparams,
                           timeout: 10000
                         });
-
+                        console.log("You are spending: "+relvolume.toFixed(3)+" KMD for "+Number(bufprice/numcoin).toFixed(3) + "KMD each and resulting in "+relvolume.toFixed(3)/Number(bufprice/numcoin).toFixed(3)+"MNZ");
+                        console.log(JSON.parse(result.content));
+                        var alice = JSON.parse(result.content).pending.aliceid.toString();
                         try{
                           TradeData.insert({
                             key: "tempswap",
                             tradeid: JSON.parse(result.content).pending.tradeid,
+                            aliceid: alice.substr(0,8),
                             expiration: JSON.parse(result.content).pending.expiration,
                             createdAt: new Date()
                           });
@@ -338,11 +359,12 @@ Meteor.methods({
                             requestid: 0,
                             quoteid: 0,
                             value: mnzamount/numcoin,
+                            aliceid: alice.substr(0,8),
                             status: "pending",
                             finished: false,
                             bobdeposit: 0,
                             alicepayment: 0,
-                            bobpayment: 0,
+                            bobpayment: "0000000000000000000000000000000000000000000000000000000000000000",
                             paymentspent: 0,
                             Apaymentspent: "0000000000000000000000000000000000000000000000000000000000000000",
                             depositspent: 0,
@@ -362,7 +384,7 @@ Meteor.methods({
                         throw new Meteor.Error(e);
                     }
                   }else if(bestprice == 0){
-                    throw new Meteor.Error("Please wait for orderbook propagation.");
+                    throw new Meteor.Error("Orderbook is not synced. Please wait a few minutes.");
                   }else{
                     throw new Meteor.Error("Already swap ongoing - please wait until finished.");
                   }
@@ -494,7 +516,6 @@ Meteor.methods({
                     }
                   } catch(e) {
                     throw new Meteor.Error(e);
-                    return false;
                   }
           }else{
             if(quoteid!=0 && requestid!=0){
@@ -509,15 +530,17 @@ Meteor.methods({
                     data: swapelem
                   });
                   var swap = JSON.parse(result.content);
-                  if(SwapData.findOne({tradeid: swap.tradeid})){
-                    if(SwapData.findOne({tradeid: swap.tradeid}).Apaymentspent == "0000000000000000000000000000000000000000000000000000000000000000"){
+                  var alice = swap.aliceid.toString();
+                  if(SwapData.findOne({aliceid: alice.substr(0,8)})){
+                    if(SwapData.findOne({aliceid: alice.substr(0,8)}).bobpayment == "0000000000000000000000000000000000000000000000000000000000000000"){
                       try{
-                        SwapData.update({ tradeid: swap.tradeid }, { $set: {
+                        SwapData.update( {aliceid: alice.substr(0,8)}, { $set: {
                           requestid: swap.requestid,
                           quoteid: swap.quoteid,
                           value: swap.values[0],
                           status: "pending",
                           finished: false,
+                          aliceid: alice.substr(0,8),
                           bobdeposit: swap.bobdeposit,
                           alicepayment: swap.alicepayment,
                           bobpayment: swap.bobpayment,
@@ -528,10 +551,10 @@ Meteor.methods({
                           finishtime: new Date(swap.finishtime*1000).toGMTString(),
                           sorttime: swap.finishtime*1000                        }});
                       }catch(e){
-                        throw new Meteor.Error(e);
+                        throw new Meteor.Error("Can not store Data into DB! Please report to dev.");
                       }
                     }else{
-                      if(SwapData.findOne({tradeid: swap.tradeid}).depositspent == "0000000000000000000000000000000000000000000000000000000000000000"){
+                      if(SwapData.findOne({aliceid: alice.substr(0,8)}).bobpayment != "0000000000000000000000000000000000000000000000000000000000000000"){
                         try{
                           SwapData.update({ tradeid: swap.tradeid }, { $set: {
                             bobdeposit: swap.bobdeposit,
@@ -547,7 +570,7 @@ Meteor.methods({
                             finished: true
                           }});
                         }catch(e){
-                          throw new Meteor.Error(e);
+                          throw new Meteor.Error("Can not update Data into DB! Please report to dev.");
                         }
                       }
                       else if(TradeData.findOne({key: "tempswap"})){
@@ -581,6 +604,8 @@ Meteor.methods({
             console.log("hello etienne");
         }
 });
+
+//SwapData.remove({});
 
 Meteor.setInterval(function() {
     if(UserData.find().count() > 4) {
