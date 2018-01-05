@@ -101,6 +101,18 @@ Template.walletview.helpers({
   }
 });
 
+Template.registerHelper('swaps',() =>{
+    return SwapData.find({}, {sort: {sorttime: -1}});
+});
+
+Template.registerHelper('activecoinMNZ',() =>{
+    if (Session.get("coin") == "MNZ") {
+      return true;
+    } else {
+      return false;
+    }
+});
+
 Template.registerHelper('formatDate', function(date) {
   return moment(date).format('MM-DD-YYYY');
 });
@@ -161,12 +173,15 @@ Template.walletview.events({
     else swal("Shit!", "Not enough balance or txfee ignored.", "error");
   },
   "click .stop": function (){
+    Session.set("loading", true);
     Session.set("logout", true);
     Meteor.call('stopwallet', function(error, result){
       if(error){
-        swal("Oops!", error, "error");
+        swal("Shit!", error, "error");
+        Session.set("loading", false);
       }
       else{
+        Session.set("loading", false);
         Session.set("login", true);
         swal("Wallet successfully closed!", "Getting back to loginpage", "success");
       }
@@ -194,6 +209,27 @@ Template.walletview.events({
  }
 });
 
+Template.registerHelper('showbuyview',() =>{
+  if (!(Session.get("coin") == "MNZ")) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+Template.registerHelper('coinsString',() =>{
+    if (Session.get("coin") == "KMD") {
+      return "Komodo";
+    } else if (Session.get("coin") == "BTC") {
+      return "Bitcoin";
+    } else if (Session.get("coin") == "MNZ") {
+      return "Monaize";
+    }
+});
+
+Template.registerHelper('currentcoin',() =>{
+  return Session.get("coin");
+});
 
 Template.registerHelper('and',(a,b)=>{
   return a && b;

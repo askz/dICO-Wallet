@@ -1,0 +1,32 @@
+<template name="swapstatusview">
+  <h4>Your participations:</h4>
+  <table class="table table-bordered swaps">
+    <thead>
+      <tr>
+        <th>tradeid</th>
+        <th>MNZ amount</th>
+        <th>status</th>
+        <th>price per MNZ</th>
+        <th>paid with</th>
+        <th>date</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#each swaps}}
+        {{> swap}}
+      {{/each}}
+    </tbody>
+  </table>
+</template>
+
+<template name="swap">
+  <tr>
+    <td>{{tradeid}}</td>
+    <td>{{value}}</td>
+    <td>{{status}} {{#unless finished}} {{> sloader}} {{/unless}}{{#if finished}}{{> check}}{{/if}}</td>
+    <td>{{price}}</td>
+    <td>{{paycoin}}</td>
+    <td>{{finishtime}}</td>
+  </tr>
+</template>

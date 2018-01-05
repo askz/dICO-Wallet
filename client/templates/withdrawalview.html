@@ -1,0 +1,27 @@
+<template name="withdrawalview">
+  <br>
+  <br>
+  <div class="container">
+    <div class="">
+      <h2>Withdrawal</h2>
+      <div class="input-group">
+        <span class="input-group-addon">{{currentcoin}}</span>
+        <input type="text" class="form-control address" aria-label="Address" placeholder="{{currentcoin}} Address">
+        <input type="number" class="form-control amount" aria-label="Amount" placeholder="Amount" value="0">
+        <span class="input-group-addon">
+          {{#if isSending}}
+            {{> loader}}
+          {{else}}
+          <button class="btn btn-secondary btn-danger
+          {{#if and activeSendButton activeAdressButton}} 
+            sendcoins 
+          {{else}} 
+            disableSendCoins 
+          {{/if}}
+          " type="button">Send</button>
+          {{/if}}
+      </span>
+      </div>
+    </div>
+  </div>
+</template>
