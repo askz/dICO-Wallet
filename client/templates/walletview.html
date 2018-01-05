@@ -72,8 +72,10 @@
         <thead>
         <tr>
           <th>tradeid</th>
-          <th>amount</th>
+          <th>MNZ amount</th>
           <th>status</th>
+          <th>price per MNZ</th>
+          <th>paid with</th>
           <th>date</th>
         </tr>
         </thead>
@@ -95,6 +97,8 @@
 <td>{{tradeid}}</td>
 <td>{{value}}</td>
 <td>{{status}} {{#unless finished}} {{> sloader}} {{/unless}}{{#if finished}}{{> check}}{{/if}}</td>
+<td>{{price}}</td>
+<td>{{paycoin}}</td>
 <td>{{finishtime}}</td>
 </tr>
 </template>
