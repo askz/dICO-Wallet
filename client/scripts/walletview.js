@@ -172,41 +172,25 @@ Template.walletview.events({
     }
     else swal("Shit!", "Not enough balance or txfee ignored.", "error");
   },
-  "click .stop": function (){
-    Session.set("loading", true);
-    Session.set("logout", true);
-    Meteor.call('stopwallet', function(error, result){
-      if(error){
-        swal("Shit!", error, "error");
-        Session.set("loading", false);
-      }
-      else{
-        Session.set("loading", false);
-        Session.set("login", true);
-        swal("Wallet successfully closed!", "Getting back to loginpage", "success");
-      }
-    });
-},
-"click .buy": function (event, template) {
-   event.preventDefault();
-   const amount = Number(Number(template.find(".buyamount").value).toFixed(8)) * numcoin;
+  "click .buy": function (event, template) {
+     event.preventDefault();
+     const amount = Number(Number(template.find(".buyamount").value).toFixed(8)) * numcoin;
 
-   if(amount > 0){
-     Meteor.call("buy", amount, "KMD", function(error, result){
-       if(error) {
-         swal("Oops!", error, "error");
+     if(amount > 0){
+       Meteor.call("buy", amount, "KMD", function(error, result){
+         if(error) {
+           swal("Oops!", error, "error");
+         }
+         else{
+           swal("Buy called", "id: " + result, "success");
+         }
+       });
+     }else {
+       {
+         swal("Oops!", "Amount needs to be bigger than 0.", "error");
        }
-       else{
-         swal("Buy called", "id: " + result, "success");
-       }
-     });
-   }else {
-     {
-       swal("Oops!", "Amount needs to be bigger than 0.", "error");
      }
    }
-
- }
 });
 
 Template.registerHelper('showbuyview',() =>{

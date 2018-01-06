@@ -18,7 +18,9 @@
     "request": "^2.83.0",
     "sweetalert": "^1.1.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "assemble": "^0.24.3"
+  },
   "scripts": {
     "start": "meteor run",
     "test": "echo \"Error: no test specified\" && exit 1"

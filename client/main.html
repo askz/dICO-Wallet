@@ -1,32 +1,47 @@
 <head>
   <title>atomicDEX</title>
   <script src="//cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.12.3/semantic.min.css">
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.12.3/semantic.min.js"></script>
 </head>
 
 <body>
-  <br>
-  {{#if login}}
-    {{#if loading}}
-      {{> spinner}}
-    {{else}}
-      {{> loginform}}
-    {{/if}}
-  {{else}}
-    {{#if loading}}
-      {{> spinner}}
-    {{else}}
-      {{> walletview}}
-      {{#if activecoinMNZ}}
-        {{> buyview}}
-        {{> swapstatusview}}
+    {{#if login}}
+      {{#if loading}}
+        {{> spinner}}
+      {{else}}
+        {{> loginform}}
       {{/if}}
-      {{> withdrawalview}}
-     {{/if}}
-  {{/if}}
-  <br>
-  {{> footer}}
+    {{else}}
+      {{#if loading}}
+        {{> spinner}}
+      {{else}}
+        <div class="wrapper">
+
+          <!-- Sidebar -->
+          <nav id="sidebar">
+            <div class="logo">
+              <img src="logo_mnz.png" height="90" />
+            </div>
+            <ul class="list-unstyled">
+              <li><a id="balance-view" class="item active"><span class="number-view">1</span>BALANCES</a></li>
+              <li><a id="buy-view" class="item"><span class="number-view">2</span>BUY MNZ</a></li>
+              <li><a id="withdrawal-view" class="item"><span class="number-view">3</span>WITHDRAWAL</a></li>
+            </ul>
+            <button id="logout" type="button" class="btn"><span class="glyphicon glyphicon-off"></span>Log out</button>
+          </nav>
+
+          <!-- Page Content -->
+          <div id="content">
+            {{#if balanceView}}
+              {{> walletview}}
+            {{/if}}
+            {{#if buyView}}
+              {{> buyview}}
+            {{/if}}
+            {{#if withdrawalView}}
+              {{> withdrawalview}}
+            {{/if}}
+          </div>
+        </div>
+      {{/if}}
+    {{/if}}
 </body>
