@@ -98,6 +98,27 @@ Template.walletview.helpers({
   },
   swaps: function(){
     return SwapData.find({}, {sort: {sorttime: -1}});
+  },
+  balances: function(){
+    var userdata = UserData.find({coin:{ $exists : true }});
+
+
+    userdata = userdata.map(function(e) {
+      e.balance = e.balance / numcoin;
+      if (e.balance == 0) {
+        e.balance = parseFloat(e.balance).toFixed(1);
+      }
+      if (e.coin == "BTC") {
+        e.coinString = "Bitcoin";
+      } else if (e.coin == "KMD") {
+        e.coinString = "Komodo";
+      } else if (e.coin == "MNZ") {
+        e.coinString = "Monaize";
+      }
+      return e;
+    });
+
+    return userdata;
   }
 });
 

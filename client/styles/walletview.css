@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Ubuntu:300,400');
 
+.content {
+	padding: 50px;
+}
+
 .stop {
 	float: right;
 }

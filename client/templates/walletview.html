@@ -1,5 +1,11 @@
 <template name="walletview">
-  <div>
+  <div class="content" >
+    <h2>Balances</h2>
+    {{#each balances}}
+      {{> balanceItem}}
+    {{/each}}
+  </div>
+<!--   <div>
     <h2>Wallet</h2>
     <span class="badge badge-dark balance">{{balance}}</span>
     <div class="btn-group" role="group" aria-label="Basic example">
@@ -31,5 +37,16 @@
     <span>Your deposit {{coinsString}} address: </span>
     <button type="button" class="btn btn-default btn-xs btn-copy-link" data-clipboard-text="{{address}}">{{address}}</button>
     {{> QRCode text=address size="128px" }}
+  </div> -->
+</template>
+
+<template name="balanceItem">
+  <tr>
+    {{balance}}{{coin}}
+  </tr>
+  <div>
+    <p>You deposit {{coinString}} address</p>
+    <button type="button" class="btn">{{smartaddress}}</button>
+    <button type="button" class="btn"><span class="glyphicon glyphicon-qrcode"></span>SEE YOUR QR CODE</button>
   </div>
 </template>
