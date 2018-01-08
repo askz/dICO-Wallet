@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import sweetalert from 'sweetalert';
-import 'sweetalert/dist/sweetalert.css';
+import swal from 'sweetalert2';
 
 Template.registerHelper('login', function() {
   return Session.get("login");

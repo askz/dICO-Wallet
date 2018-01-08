@@ -1,10 +1,11 @@
+import swal from 'sweetalert2';
+
 const numcoin = Number(100000000);
 
 Template.walletview.onCreated(function() {
   this.autorun(() => {
       this.subscribe('userdata', {
         onReady: function () {
-          console.log("render");
           if(UserData.findOne({key:"userpass"})) {
             Session.set("login", false);
             Session.set("logout", false);
@@ -102,7 +103,6 @@ Template.walletview.helpers({
   balances: function(){
     var userdata = UserData.find({coin:{ $exists : true }});
 
-
     userdata = userdata.map(function(e) {
       e.balance = e.balance / numcoin;
       if (e.balance == 0) {
@@ -120,6 +120,10 @@ Template.walletview.helpers({
 
     return userdata;
   }
+});
+
+Template.registerHelper('smartaddressQR',() =>{
+    return Session.get("smartaddressQR");
 });
 
 Template.registerHelper('swaps',() =>{
@@ -211,6 +215,14 @@ Template.walletview.events({
          swal("Oops!", "Amount needs to be bigger than 0.", "error");
        }
      }
+   },
+   'click .qrcode': function (event, template) {
+      console.log(event.target.id);
+      console.log(UserData.findOne({coin:event.target.id}).smartaddress);
+      var smartaddress = UserData.findOne({coin:event.target.id}).smartaddress;
+      Session.set("smartaddressQR", smartaddress);
+      Modal.show('qrCodeModal');
+      // sAlert.info('Your message', {smartaddress: smartaddress});
    }
 });
 

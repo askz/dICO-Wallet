@@ -1,11 +1,10 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import sweetalert from 'sweetalert';
-import 'sweetalert/dist/sweetalert.css';
+import swal from 'sweetalert2'
 
 const numcoin = Number(100000000);
-const defaultValueMIN = 0.1;
-const defaultValueMAX = 100;
+const defaultValueMIN = 15000;
+const defaultValueMAX = 10000000;
 
 priceCoins = function(value){
   if (Session.get("currentBuyCoin") == "KMD") {

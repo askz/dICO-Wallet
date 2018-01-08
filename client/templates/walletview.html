@@ -1,52 +1,42 @@
 <template name="walletview">
-  <div class="content" >
-    <h2>Balances</h2>
-    {{#each balances}}
-      {{> balanceItem}}
-    {{/each}}
-  </div>
-<!--   <div>
-    <h2>Wallet</h2>
-    <span class="badge badge-dark balance">{{balance}}</span>
-    <div class="btn-group" role="group" aria-label="Basic example">
-      <button type="button" class="btn btn-secondary kmd
-      {{#if activecoinKMD}}
-        buttonactived
-      {{else}}
-        buttondesactived
-      {{/if}}">KMD</button>
-      <div style="border-right: 1px solid #d9d9d9; float: left; height: 34px">
+  <div class="content">
+    <div class="row-header">
+      <div class="col-header">
+        <h3>Balances</h3>
       </div>
-      <button type="button" class="btn btn-secondary btc
-      {{#if activecoinBTC}}
-        buttonactived
-      {{else}}
-        buttondesactived
-      {{/if}}">BTC</button>
-      <div style="border-right: 1px solid #d9d9d9; float: left; height: 34px">
+      <div class="col-header text-right">
+        <div>
+          <h5>TOTAL BALANCES</h5>
+        </div>
+        <div>
+          <span id="totalBalanceUsd">$ 16 689.01</span>
+        </div>
       </div>
-      <button type="button" class="btn btn-secondary mnz
-      {{#if activecoinMNZ}}
-        buttonactived
-      {{else}}
-        buttondesactived
-      {{/if}}">MNZ</button>
     </div>
-    <br>
-    <br>
-    <span>Your deposit {{coinsString}} address: </span>
-    <button type="button" class="btn btn-default btn-xs btn-copy-link" data-clipboard-text="{{address}}">{{address}}</button>
-    {{> QRCode text=address size="128px" }}
-  </div> -->
+      {{#each balances}}
+        {{> balanceItem}}
+      {{/each}}
+  </div>
 </template>
 
 <template name="balanceItem">
-  <tr>
-    {{balance}}{{coin}}
-  </tr>
-  <div>
-    <p>You deposit {{coinString}} address</p>
-    <button type="button" class="btn">{{smartaddress}}</button>
-    <button type="button" class="btn"><span class="glyphicon glyphicon-qrcode"></span>SEE YOUR QR CODE</button>
-  </div>
+    <div class="row-main-item">
+      <div>
+        {{balance}} {{coin}}
+      </div>
+      <div>
+        <button id="{{coin}}" type="button" class="btn btn-primary qrcode"><span class="glyphicon glyphicon-qrcode"></span>SEE YOUR QR CODE</button>
+      </div>
+      <div>
+      <div class="row-header">
+        <div>
+          <p>You deposit {{coinString}} address</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-copy-link btn-success" data-clipboard-text="{{smartaddress}}">{{smartaddress}}</button>
+        </div>
+      </div>
+      </div>
+      {{> sAlert template='sAlertCustom'}}
+    </div>
 </template>
