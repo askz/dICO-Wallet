@@ -405,13 +405,35 @@ Meteor.methods({
                 'coin': coin,
                 'address': UserData.findOne({coin:coin}).smartaddress.toString()
             };
+            try {
+              const cmcData = JSON.parse(HTTP.get('https://api.coinmarketcap.com/v1/ticker/').content);
+              var price_usd;
+              cmcData.forEach(function(cmcCoin) {
+                if (coin !== 'MNZ' && cmcCoin.symbol == coin) {
+                  price_usd = cmcCoin.price_usd;
+                } else if (coin === 'MNZ' && cmcCoin.symbol === 'BTC') {
+                  price_usd = cmcCoin.price_usd;
+                }
+              })
+              if(coin === 'MNZ') {
+                price_btc = 0.00000001;
+                price_usd = price_btc * Number(price_usd);
+              }
+            } catch (e) {
+              throw Meteor.Error(e);
+            }
 
             try {
-                const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
-                    data: balanceparams
-                });
-                try {
-                    UserData.update({ coin: coin }, { $set: { balance: (Number(JSON.parse(result.content).balance) * numcoin) }});
+              const result = HTTP.call('POST', 'http://127.0.0.1:7783', {
+                data: balanceparams
+              });
+              try {
+                UserData.update({ coin: coin }, {
+                      $set: {
+                        balance: (Number(JSON.parse(result.content).balance) * numcoin),
+                        balance_usd: Number(UserData.findOne({coin:coin}).balance * Number(price_usd) / numcoin).toFixed(2)
+                      }
+                    });
                 } catch(e) {
                     throw new Meteor.Error(e);
                 }
