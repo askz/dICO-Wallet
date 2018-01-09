@@ -620,4 +620,4 @@ Meteor.setInterval(function() {
     Meteor.call('getprice');
     Meteor.call("checkswapstatus");
     }
-}, 60000);
+}, 30000);

@@ -156,7 +156,6 @@ Template.walletview.events({
   "change #coin-select": function (event, template) {
       var coin = $(event.currentTarget).val();
       Session.set("coin", coin);
-
   },
   'keyup .amount': _.throttle(function(event) {
     var value = Number(event.target.value)*numcoin;

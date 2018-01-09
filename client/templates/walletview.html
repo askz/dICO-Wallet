@@ -21,22 +21,24 @@
 
 <template name="balanceItem">
     <div class="row-main-item">
-      <div>
-        {{balance}} {{coin}}
+      <div class="row-title">
+        <h2 id="balance-item">{{balance}}</h2>
+        <h2 id="coin-item">{{coin}}</h2>
       </div>
-      <div>
-        <button id="{{coin}}" type="button" class="btn btn-primary qrcode"><span class="glyphicon glyphicon-qrcode"></span>SEE YOUR QR CODE</button>
+      <div class="row-content">
+        <p class="col-header">16 689.01 US Dollar</p>
+        <button id="{{coin}}" type="button" class="btn qrcode">SEE YOUR QR CODE<span class="glyphicon glyphicon-qrcode"></span></button>
       </div>
-      <div>
-      <div class="row-header">
-        <div>
-          <p>You deposit {{coinString}} address</p>
+      <div class="row-footer">
+        <p class="col-header">You deposit {{coinString}} address :</p>
+        <div class="card">
+          <button type="button" class="btn btn-copy-link" data-clipboard-text="{{smartaddress}}">
+            <div class="btn-inside-qrcode">
+              {{smartaddress}}
+            </div>
+          </button>
         </div>
-        <div>
-          <button type="button" class="btn btn-copy-link btn-success" data-clipboard-text="{{smartaddress}}">{{smartaddress}}</button>
-        </div>
       </div>
-      </div>
-      {{> sAlert template='sAlertCustom'}}
+      <hr/>
     </div>
 </template>

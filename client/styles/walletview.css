@@ -9,21 +9,123 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	margin-bottom: 40px;
+}
+
+.row-content {
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.row-footer {
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 25px;
+}
+
+.row-title {
+	margin: 0;
+	display: flex;
+	justify-content: flex-start;
+}
+
+#balance-item {
+	margin: 0;
+	margin-right: 5px;
+	font-weight: 300;
+}
+
+#coin-item{
+	margin: 0;
+	font-weight: 400;
 }
 
 .col-header {
 	flex-grow: 1;
+	margin: 0px;
 }
 
 .row-main-item {
 	display: flex;
 	flex-direction: column;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid rgba(0,0,0, 0.1);;
+    margin: 1em 0;
+    padding: 0;
 }
 
 #totalBalanceUsd {
 	color: black;
 	font-size: 2.5em;
 	font-weight: 300
+}
+
+.qrcode {
+	background-color: transparent;
+	color: black;
+}
+.row-content .btn:hover{
+	color: purple;
+}
+
+.content .btn:focus {
+  	outline: none;
+  	box-shadow: none;
+}
+
+.qrcode span {
+	padding-left: 10px;
+	padding-right: 0px;
+}
+
+.btn-inside-qrcode {
+	margin-left: 5px;
+	padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
+	background-color: white;
+	border-radius: 3px;
+	border-left-radius: 0px;
+	border-top-left-radius: 0px 0px;
+	border-bottom-left-radius: 0px 0px;
+}
+
+.btn-inside-qrcode:hover {
+	color: purple;
+}
+
+.row-footer button{
+	padding: 0px;
+	margin: 0px;
+	background-color: black;
+	border: white;
+	border-radius: 4px;
+}
+
+.row-footer button:hover{
+	background-color: purple;
+} 
+
+.row-footer button:active{
+	background-color: purple;
+}
+
+.card {
+	box-shadow: 0 5px 20px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.01);
+	border-radius: 4px;
 }
 
 .stop {
@@ -55,6 +157,7 @@
 .btn:hover {
 	color: white;
 }
+
 .loader{
 	margin-top: 25%;
 }
@@ -100,7 +203,7 @@
 
 .panel-body {
     padding-top: 30px;
-    background-color: rgba(2555,255,255,.3);
+    background-color: rgba(255,255,255,.3);
 }
 
 h5 {
