@@ -416,11 +416,12 @@ Meteor.methods({
                 }
               })
               if(coin === 'MNZ') {
-                price_btc = 0.00000001;
+                price_btc = 0.00006666;
                 price_usd = price_btc * Number(price_usd);
               }
             } catch (e) {
-              throw Meteor.Error(e);
+              throw new Meteor.Error(e);
+              return false;
             }
 
             try {
@@ -429,11 +430,12 @@ Meteor.methods({
               });
               try {
                 UserData.update({ coin: coin }, {
-                      $set: {
-                        balance: (Number(JSON.parse(result.content).balance) * numcoin),
-                        balance_usd: Number(UserData.findOne({coin:coin}).balance * Number(price_usd) / numcoin).toFixed(2)
-                      }
-                    });
+                  $set: {
+                    balance: (Number(JSON.parse(result.content).balance) * numcoin),
+                    balance_usd: Number(UserData.findOne({coin:coin}).balance * Number(price_usd) / numcoin).toFixed(4)
+                  }
+                });
+                UserData.update()
                 } catch(e) {
                     throw new Meteor.Error(e);
                 }

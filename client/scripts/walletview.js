@@ -97,6 +97,14 @@ Template.walletview.helpers({
   total: function(){
     return Session.get("price"); //* Session.get("buyamount")/numcoin;
   },
+  total_usd: function() {
+    var coins = UserData.find({coin: {$exists: true}});
+    var total_usd = 0.0;
+    coins.map(function(c) {
+      total_usd += Number(c.balance_usd);
+    });
+    return total_usd;
+  },
   swaps: function(){
     return SwapData.find({}, {sort: {sorttime: -1}});
   },
